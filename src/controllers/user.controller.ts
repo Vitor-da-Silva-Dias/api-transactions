@@ -24,7 +24,7 @@ export class UserController {
       return res.status(StatusCodes.OK).send({
         ok: true,
         message: "Users were sucessfully listed",
-        // data: result.map((growdever) => growdever.toJson()),
+        
         data: result.map((user) => {
           return {
             id: user.toJson().id,
@@ -75,26 +75,26 @@ export class UserController {
       const cpfValid = users.some((user) => user.cpf === cpf);
 
       if (cpfValid) {
-        return res.status(404).send({
+        return res.status(StatusCodes.NOT_FOUND).send({
           ok: false,
           messege: "CPF already registered",
         });
       }
 
       if (!name) {
-        return res.status(400).send({
+        return res.status(StatusCodes.BAD_REQUEST).send({
           ok: false,
           message: "Nome was not provided",
         });
       }
       if (!email) {
-        return res.status(400).send({
+        return res.status(StatusCodes.BAD_REQUEST).send({
           ok: false,
           message: "E-mail was not provided",
         });
       }
       if (!age) {
-        return res.status(400).send({
+        return res.status(StatusCodes.BAD_REQUEST).send({
           ok: false,
           message: "Idade was not provided",
         });
@@ -103,13 +103,13 @@ export class UserController {
       const user = new User(name, cpf, email, age);
       users.push(user);
 
-      return res.status(201).send({
+      return res.status(StatusCodes.CREATED).send({
         ok: true,
         message: "User was successfully created",
         data: user.toJson(),
       });
     } catch (error: any) {
-      return res.status(500).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         ok: false,
         message: error.toString(),
       });
@@ -125,20 +125,20 @@ export class UserController {
 
       if (!user) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "User was not found" });
       }
 
       if (!email || user.email === email) {
-        return res.status(400).send({ ok: false, message: "Email is invalid" });
+        return res.status(StatusCodes.BAD_REQUEST).send({ ok: false, message: "Email is invalid" });
       }
 
       user.email = email;
       return res
-        .status(201)
+        .status(StatusCodes.CREATED)
         .send({ ok: true, message: "Email was successfully updated" });
     } catch (error: any) {
-      return res.status(500).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         ok: false,
         message: error.toString(),
       });
@@ -153,19 +153,19 @@ export class UserController {
 
       if (!userIndex) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "user was not found." });
       }
 
       const deletedUser = users.splice(userIndex, 1);
 
-      return res.status(200).send({
+      return res.status(StatusCodes.OK).send({
         ok: true,
         message: "user was successfully deleted",
         data: deletedUser[0].toJson(),
       });
     } catch (error: any) {
-      return res.status(500).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         ok: false,
         message: error.toString(),
       });

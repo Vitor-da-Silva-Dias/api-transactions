@@ -1,6 +1,7 @@
 import { users } from "../database/users";
 import { Request, Response } from "express";
 import { Transaction } from "../models/transaction";
+import { StatusCodes } from "http-status-codes";
 
 export class TransactionController {
   public createTransactions(req: Request, res: Response) {
@@ -12,24 +13,24 @@ export class TransactionController {
 
       if (!user) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "User was not found" });
       }
 
       if (!title) {
-        return res.status(400).send({
+        return res.status(StatusCodes.BAD_REQUEST).send({
           ok: false,
           message: "title was not provided",
         });
       }
       if (!value) {
-        return res.status(400).send({
+        return res.status(StatusCodes.BAD_REQUEST).send({
           ok: false,
           message: "Value was not provided",
         });
       }
       if (!type) {
-        return res.status(400).send({
+        return res.status(StatusCodes.BAD_REQUEST).send({
           ok: false,
           message: "Type was not provided",
         });
@@ -38,13 +39,13 @@ export class TransactionController {
       const newTransaction = new Transaction(title, value, type);
       user.transactions?.push(newTransaction);
 
-      return res.status(200).send({
+      return res.status(StatusCodes.OK).send({
         ok: true,
         message: "Transaction were sucessfully listed",
         data: newTransaction.toJson(),
       });
     } catch (error: any) {
-      return res.status(500).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         ok: false,
         message: error.toString(),
       });
@@ -59,7 +60,7 @@ export class TransactionController {
 
       if (!user) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "User was not found" });
       }
 
@@ -69,17 +70,17 @@ export class TransactionController {
 
       if (!transactionValid) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "user was not found." });
       }
 
-      return res.status(200).send({
+      return res.status(StatusCodes.OK).send({
         ok: true,
         message: "Transaction was sucessfully listed",
         data: transactionValid.toJson(),
       });
     } catch (error: any) {
-      return res.status(500).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         ok: false,
         message: error.toString(),
       });
@@ -96,7 +97,7 @@ export class TransactionController {
 
       if (!user) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "User was not found" });
       }
 
@@ -119,7 +120,7 @@ export class TransactionController {
       }
 
       if (title) {
-        return res.status(200).send({
+        return res.status(StatusCodes.OK).send({
           ok: true,
           message: "Title was sucessfully listed",
           data: filterTitle,
@@ -128,7 +129,7 @@ export class TransactionController {
       }
 
       if (type) {
-        return res.status(200).send({
+        return res.status(StatusCodes.OK).send({
           ok: true,
           message: "Type was sucessfully listed",
           data: filterType,
@@ -140,14 +141,14 @@ export class TransactionController {
         transaction.toJson()
       );
 
-      return res.status(200).send({
+      return res.status(StatusCodes.OK).send({
         ok: true,
         message: "Transaction was sucessfully listed",
         data: listTransactions,
         balance: { income, outcome, total: income - outcome },
       });
     } catch (error: any) {
-      return res.status(500).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         ok: false,
         message: error.toString(),
       });
@@ -163,7 +164,7 @@ export class TransactionController {
 
       if (!user) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "User was not found" });
       }
 
@@ -173,13 +174,13 @@ export class TransactionController {
 
       if (!transactionIndex) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "Transaction was not found." });
       }
 
       if (!type || !title || !value) {
         return res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .send({ ok: false, message: "Transaction is invalid" });
       }
 
@@ -188,10 +189,10 @@ export class TransactionController {
       transactionIndex.value = value;
 
       return res
-        .status(201)
+        .status(StatusCodes.CREATED)
         .send({ ok: true, message: "Transação was successfully updated" });
     } catch (error: any) {
-      return res.status(500).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         ok: false,
         message: error.toString(),
       });
@@ -206,7 +207,7 @@ export class TransactionController {
 
       if (!user) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "User was not found." });
       }
 
@@ -216,20 +217,19 @@ export class TransactionController {
 
       if (transactionIndex === -1) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ ok: false, message: "Transaction was not found." });
       }
 
       const deletedTransaction = user.transactions.splice(transactionIndex, 1);
 
-      return res.status(200).send({
+      return res.status(StatusCodes.OK).send({
         ok: true,
         message: "Transaction was delete",
         data: deletedTransaction[0].toJson(),
-        // balance: { income, outcome, total: income - outcome },
       });
     } catch (error: any) {
-      return res.status(500).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         ok: false,
         message: error.toString(),
       });
